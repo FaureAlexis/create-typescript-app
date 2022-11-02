@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# This script is used to initialize a Typescript web app, frontend (Vue) and backend (Express).
+
+# EH : Check if argument is passed
+if [ -z $1 ]; then
+    echo "Usage: init_ts_app <app_name>"
+    exit 1
+fi
+
+# EH : Check if app name is valid
+if [ -d $1 ]; then
+    echo -e "\x1b[91mError:\x1b[0m Directory $1 already exists"
+    exit 1
+fi
+
+# EH : Check if nodejs & npm are installed
+if ! [ -x "$(command -v node)" ]; then
+    echo -e "\x1b[91mError:\x1b[0m Nodejs is not installed"
+    exit 1
+fi
+
+# Help flag (-h)
+if [ $1 == "-h" ]; then
+    echo "This script is used to initialize a Typescript web app, ether frontend or backend."
+    echo "Usage: init_ts_app <app_name>"
+    exit 0
+fi
+
+app_name=$1
+echo -e "Initializing Typescript app \x1b[93m $app_name \x1b[0m"
+mkdir $app_name; cd $app_name
+echo "Initializing git"
+git init -q
+echo -e "| \x1b[93m Initializing nodejs backend \x1b[0m"
+mkdir back; cd back; npm init -y &> /dev/null
+echo "| | Creating gitignore..."
+echo ".env" > .gitignore
+echo ".npm" >> .gitignore
+echo "node_modules" >> .gitignore
+echo "npm-debug.log*" >> .gitignore
+echo "*.log" >> .gitignore
+echo "| | Installing dev dependencies..."
+npm i -D typescript ts-node nodemon tsconfig-paths tsup rimraf @types/node @types/express @types/cors @types/jsonwebtoken @types/bcrypt @types/mysql &> /dev/null
+echo "| | Installing dependencies..."
+npm i bcrypt cors dotenv express jsonwebtoken mysql &> /dev/null
+echo "| | Creating backend structure..."
+mkdir build
+mkdir src; touch src/index.ts
+mkdir src/routes
+mkdir src/middlewares
+mkdir src/database
+mkdir types
+mkdir src/utils
+touch .env
+echo "| | Creating tsconfig.json..."
+npx tsc --init --rootDir src --outDir build --esModuleInterop --resolveJsonModule --lib es6 --module commonjs --allowJs true --noImplicitAny true --removeComments true &> /dev/null
+echo "| | Creating nodemon.json..."
+echo "{" > nodemon.json
+echo "    \"watch\": [\"src\"]," >> nodemon.json
+echo "    \"ext\": \"ts\"," >> nodemon.json
+echo "    \"ignore\": [\"src/**/*.spec.ts\"]," >> nodemon.json
+echo "    \"exec\": \"ts-node src/index.ts\"" >> nodemon.json
+echo "}" >> nodemon.json
+echo "| | Creating package.json scripts..."
+jq '.scripts.dev="nodemon"' package.json > tmp.$$.json && rm package.json && mv tmp.$$.json package.json
+jq '.scripts.build="rimraf build && tsc"' package.json > tmp.$$.json && rm package.json && mv tmp.$$.json package.json
+jq '.scripts.start="npm run build && node build/index.js"' package.json > tmp.$$.json && rm package.json && mv tmp.$$.json package.json
+echo -e "| | \x1b[36mBackend initialized !\x1b[0m"
+cd ..
+echo -e "| \x1b[93mInitializing Vue frontend \x1b[0m"
+echo "| | Creating gitignore..."
+echo "node_modules" > .gitignore
+echo "dist" >> .gitignore
+echo "npm-debug.log*" >> .gitignore
+echo "*.log" >> .gitignore
+echo "| | Configuring Vue..."
+cat ../vue_config.json > ~/.vuerc
+echo "| | Installing dependencies..."
+vue create front -n --skipGetStarted -p ts &> /dev/null
+cd front;
+npm i axios &> /dev/null
+echo -e "| | \x1b[36mFrontend initialized !\x1b[0m"
+echo -e "\x1b[92mApp initialized !\x1b[0m"
