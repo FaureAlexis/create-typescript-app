@@ -24,16 +24,20 @@ Example :
 
 Clone the repository :
 
-```git clone git@github.com:FaureAlexis/create-typescript-app.git```
-
-`cd create-typescript-app`
+```
+git clone git@github.com:FaureAlexis/create-typescript-app.git
+cd create-typescript-app
+```
 
 Install requirements (using debian package manager, edit this with your distribution pm):
-``sudo apt update;
+```
+sudo apt update;
 sudo apt-get install nodejs jq npm;
-sudo npm install -g @vue/cli``
+sudo npm install -g @vue/cli
+```
 
 Create app : 
+
 `./create-typescript-app project_name`
 
 *Feel free to add script to path in order to call it from everywhere*
@@ -50,10 +54,13 @@ You will need [Homebrew](https://brew.sh/) in order to download packages.
 
 Install requirements (using homebrew):
 
-`brew install nodejs jq npm;
-sudo npm install -g @vue/cli`
+```
+brew install nodejs jq npm;
+sudo npm install -g @vue/cli
+```
 
 Create app : 
+
 `./create-typescript-app project_name`
 
 *Feel free to add script to path in order to call it from everywhere*
@@ -92,3 +99,7 @@ Blank express typescript app with following configuration :
 Project back-end look like this :
 
 ![](img/back-output.png)
+
+Run back-end (dev) :
+
+`npm run dev`
